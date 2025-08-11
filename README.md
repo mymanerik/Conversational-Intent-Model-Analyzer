@@ -4,8 +4,7 @@ This project is a professional-grade conversion of an NDA project completed rece
 This application showcases a hands-on ability to analyze AI-powered customer interactions, interpret consumer intent, and leverage insights... to refine AI intent models.
 
 🚀 Live Demo
-
-<<<nextup>>>
+[Link to your live Streamlit Community Cloud app - you'll add this after deploying]
 
 🎯 Project Purpose
 The goal of this project is to demonstrate a sophisticated, hands-on understanding of the AI Data Analyst role by:
