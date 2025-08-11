@@ -13,7 +13,7 @@ import anthropic
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="Conversational Intent Model Analyzer",
-    page_icon="�",
+    page_icon="🔬",
     layout="wide"
 )
 
@@ -180,4 +180,3 @@ with col2:
 
 st.markdown("---")
 st.write("Project by [Your Name] - Created for an AI Data Analyst Application.")
-�
