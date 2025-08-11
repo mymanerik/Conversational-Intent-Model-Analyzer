@@ -114,7 +114,7 @@ with st.sidebar:
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
 st.markdown("""
-This project is a professional-grade conversion of an NDA project completed recently into a live working GitHub ready demo. It is an interactive web application that directly addresses evaluating and benchmarking leading AI models for the task of customer intent classification.
+This project is a professional-grade conversion of an NDA project completed recently into a live working GitHub / Streamlit - ready demo. It is an interactive web application that directly addresses evaluating and benchmarking leading AI models for the task of customer intent classification.
 """)
 st.markdown("---")
 
