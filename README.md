@@ -1,10 +1,11 @@
 Conversational Intent Model Analyzer
-This project is a professional-grade demonstration created for the AI Data Analyst position at Drips. It is an interactive web application that directly addresses the core responsibilities of the role by evaluating and benchmarking leading AI models for the task of customer intent classification.
+This project is a professional-grade conversion of an NDA project completed recently into a live working GitHub ready demo. It is an interactive web application that directly addresses evaluating and benchmarking leading AI models for the task of customer intent classification.
 
-This application showcases a hands-on ability to analyze AI-powered customer interactions, interpret consumer intent, and leverage insights... to refine AI intent models, all of which are central to the position at Drips.
+This application showcases a hands-on ability to analyze AI-powered customer interactions, interpret consumer intent, and leverage insights... to refine AI intent models.
 
 🚀 Live Demo
-[Link to your live Streamlit Community Cloud app - you'll add this after deploying]
+
+<<<nextup>>>
 
 🎯 Project Purpose
 The goal of this project is to demonstrate a sophisticated, hands-on understanding of the AI Data Analyst role by:
@@ -58,8 +59,8 @@ streamlit run app.py
 
 Once the app is running, enter your API keys in the sidebar to activate the intent classification feature for the integrated models.
 
-💡 How This Project Aligns with the Drips Role
-This project directly demonstrates the qualifications required for the AI Data Analyst role:
+💡 How This Project Aligns with an AI Data Analyst Role
+This project directly demonstrates the qualifications required for an AI Data Analyst role:
 
 AI Data Analysis & Intent Modeling: The core function of the app is to "analyze AI-powered customer interactions... ensuring AI models accurately interpret consumer intent."
 
@@ -69,4 +70,4 @@ Data Curation & Annotation: While not creating guidelines, it shows an understan
 
 Data Analysis Expertise: It uses pandas and Plotly to structure and visualize a dataset, a key skill for the role.
 
-This project reflects my understanding of the need for continuous Improvement, one of Drips' core values. By building a tool that allows for the direct comparison and analysis of different AI models, it demonstrates a proactive, data-driven approach to enhancing the quality of AI-powered conversations.
+By building a tool that allows for the direct comparison and analysis of different AI models, this project demonstrates a proactive, data-driven approach to enhancing the quality of AI-powered conversations.
