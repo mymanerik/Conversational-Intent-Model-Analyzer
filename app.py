@@ -114,7 +114,7 @@ with st.sidebar:
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
 st.markdown("""
-This application is a professional demonstration for an **AI Data Analyst** role. It showcases the ability to **evaluate and benchmark leading AI models** for the core task of **customer intent classification**. This directly aligns with the job's focus on `AI Data Analysis & Intent Modeling`, `Model Optimization`, and `Data Curation`.
+This project is a professional-grade conversion of an NDA project completed recently into a live working GitHub ready demo. It is an interactive web application that directly addresses evaluating and benchmarking leading AI models for the task of customer intent classification.
 """)
 st.markdown("---")
 
