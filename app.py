@@ -1,7 +1,7 @@
 # app.py
-# Conversational Intent Model Analyzer for Drips AI Data Analyst Application
+# Conversational Intent Model Analyzer
 # This version benchmarks leading AI models (OpenAI, Google, Anthropic) for the
-# core task of customer intent classification, directly aligning with the job description.
+# core task of customer intent classification.
 
 import streamlit as st
 import pandas as pd
@@ -114,7 +114,7 @@ with st.sidebar:
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
 st.markdown("""
-This application is a professional demonstration for the **AI Data Analyst** role at **Drips**. It showcases the ability to **evaluate and benchmark leading AI models** for the core task of **customer intent classification**. This directly aligns with the job's focus on `AI Data Analysis & Intent Modeling`, `Model Optimization`, and `Data Curation`.
+This application is a professional demonstration for an **AI Data Analyst** role. It showcases the ability to **evaluate and benchmark leading AI models** for the core task of **customer intent classification**. This directly aligns with the job's focus on `AI Data Analysis & Intent Modeling`, `Model Optimization`, and `Data Curation`.
 """)
 st.markdown("---")
 
@@ -148,7 +148,7 @@ with col1:
         if analyzed_intent:
             st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
             st.write("""
-            **How this helps Drips:** An AI Data Analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing Drips' conversational AI.
+            **How this helps an AI Data Analyst:** An analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing conversational AI.
             """)
 
 # --- COLUMN 2: DATA ANALYSIS DASHBOARD ---
@@ -170,7 +170,7 @@ with col2:
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
         st.write("""
-        **How this helps Drips:** This analysis helps prioritize work. An analyst would focus on improving the models for the most frequent intents (`Billing Inquiry`, `Technical Support`) to achieve the largest impact on overall system performance and customer satisfaction. This directly relates to **identifying trends to enhance system performance.**
+        **How this helps an AI Data Analyst:** This analysis helps prioritize work. An analyst would focus on improving the models for the most frequent intents (`Billing Inquiry`, `Technical Support`) to achieve the largest impact on overall system performance and customer satisfaction. This directly relates to **identifying trends to enhance system performance.**
         """)
 
     except FileNotFoundError:
@@ -179,4 +179,4 @@ with col2:
         st.error(f"An error occurred while loading the data: {e}")
 
 st.markdown("---")
-st.write("Project by [Your Name] - Created for the Drips AI Data Analyst Application.")
+st.write("Project by [Your Name] - Created for an AI Data Analyst Application.")
