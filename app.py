@@ -13,7 +13,7 @@ import anthropic
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="Conversational Intent Model Analyzer",
-    page_icon="🔬",
+    page_icon="�",
     layout="wide"
 )
 
@@ -69,7 +69,7 @@ def analyze_with_openai(api_key, user_message):
         intent = response.choices[0].message.content.strip()
         return intent if intent in INTENT_CATEGORIES else "Unclassified"
     except Exception as e:
-        st.error(f"OpenAI API Error: {e}")
+        st.error("That key is not for the model you chose, or the key has expired.")
         return None
 
 def analyze_with_google(api_key, user_message):
@@ -81,7 +81,7 @@ def analyze_with_google(api_key, user_message):
         intent = response.text.strip()
         return intent if intent in INTENT_CATEGORIES else "Unclassified"
     except Exception as e:
-        st.error(f"Google Gemini API Error: {e}")
+        st.error("That key is not for the model you chose, or the key has expired.")
         return None
 
 def analyze_with_anthropic(api_key, user_message):
@@ -94,27 +94,26 @@ def analyze_with_anthropic(api_key, user_message):
         intent = message.content[0].text.strip()
         return intent if intent in INTENT_CATEGORIES else "Unclassified"
     except Exception as e:
-        st.error(f"Anthropic API Error: {e}")
+        st.error("That key is not for the model you chose, or the key has expired.")
         return None
 
 # --- SIDEBAR FOR CONFIGURATION ---
 with st.sidebar:
     st.header("⚙️ Configuration")
-    st.write("Select an AI model and provide the required API key(s).")
+    st.write("Select an AI model and provide the required API key.")
     model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
     
     st.selectbox(
         "(Future Integrations Below):",
-        FUTURE_MODELS,
-        disabled=True
+        FUTURE_MODELS
     )
 
     st.markdown("---")
-    openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for all OpenAI models.")
-    google_api_key = st.text_input("Google API Key", type="password", help="Required for all Google Gemini models.")
-    anthropic_api_key = st.text_input("Anthropic API Key", type="password", help="Required for all Anthropic Claude models.")
+    
+    api_key = st.text_input("Enter API Key for Selected Model", type="password")
+
     st.markdown("---")
-    st.info("Your API keys are not stored and are only used for the current session.")
+    st.info("Your API key is not stored and is only used for the current session.")
 
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
@@ -133,24 +132,24 @@ with col1:
     user_input = st.text_area("Customer Message:", "I was charged twice this month for my subscription, can you please look into it?", height=100)
 
     if st.button("Analyze Intent", type="primary"):
-        analyzed_intent = None
-        provider = model_choice.split(':')[0]
-        with st.spinner(f"Asking {provider} to classify intent..."):
-            if provider == "OpenAI":
-                if openai_api_key: analyzed_intent = analyze_with_openai(openai_api_key, user_input)
-                else: st.warning("Please provide your OpenAI API key in the sidebar.")
-            elif provider == "Google":
-                if google_api_key: analyzed_intent = analyze_with_google(google_api_key, user_input)
-                else: st.warning("Please provide your Google API key in the sidebar.")
-            elif provider == "Anthropic":
-                if anthropic_api_key: analyzed_intent = analyze_with_anthropic(anthropic_api_key, user_input)
-                else: st.warning("Please provide your Anthropic API key in the sidebar.")
+        if not api_key:
+            st.warning("Please enter your API key in the sidebar.")
+        else:
+            analyzed_intent = None
+            provider = model_choice.split(':')[0]
+            with st.spinner(f"Asking {provider} to classify intent..."):
+                if provider == "OpenAI":
+                    analyzed_intent = analyze_with_openai(api_key, user_input)
+                elif provider == "Google":
+                    analyzed_intent = analyze_with_google(api_key, user_input)
+                elif provider == "Anthropic":
+                    analyzed_intent = analyze_with_anthropic(api_key, user_input)
 
-        if analyzed_intent:
-            st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
-            st.write("""
-            **How this helps an AI Data Analyst:** An analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing conversational AI.
-            """)
+            if analyzed_intent:
+                st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
+                st.write("""
+                **How this helps an AI Data Analyst:** An analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing conversational AI.
+                """)
 
 # --- COLUMN 2: DATA ANALYSIS DASHBOARD ---
 with col2:
@@ -181,3 +180,4 @@ with col2:
 
 st.markdown("---")
 st.write("Project by [Your Name] - Created for an AI Data Analyst Application.")
+�
