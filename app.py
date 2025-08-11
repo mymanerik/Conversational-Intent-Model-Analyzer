@@ -103,17 +103,14 @@ with st.sidebar:
     st.write("Select an AI model and provide the required API key.")
     model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
     
+    api_key = st.text_input("Enter API Key for Selected Model", type="password")
+
+    st.info("Your API key is not stored and is only used for the current session.")
+
     st.selectbox(
         "(Future Integrations Below):",
         FUTURE_MODELS
     )
-
-    st.markdown("---")
-    
-    api_key = st.text_input("Enter API Key for Selected Model", type="password")
-
-    st.markdown("---")
-    st.info("Your API key is not stored and is only used for the current session.")
 
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
