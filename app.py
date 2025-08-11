@@ -1,0 +1,182 @@
+# app.py
+# Conversational Intent Model Analyzer for Drips AI Data Analyst Application
+# This version benchmarks leading AI models (OpenAI, Google, Anthropic) for the
+# core task of customer intent classification, directly aligning with the job description.
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import openai
+import google.generativeai as genai
+import anthropic
+
+# --- PAGE CONFIGURATION ---
+st.set_page_config(
+    page_title="Conversational Intent Model Analyzer",
+    page_icon="🔬",
+    layout="wide"
+)
+
+# --- STATIC DATA ---
+# Re-ordered list of models to highlight integrated ones first.
+INTEGRATED_MODELS = [
+    "OpenAI: gpt-5",
+    "Google: Gemini 2.5 Pro",
+    "Anthropic: Claude 3.5 Sonnet",
+]
+
+FUTURE_MODELS = [
+    "--- (Future Integrations Below) ---",
+    "AI21 Labs: Jurassic-1 Grande", "AI21 Labs: Jurassic-1 Jumbo", "AI21 Labs: Jurassic-1 Large",
+    "AI21 Labs: Jurassic-2 Light", "AI21 Labs: Jurassic-2 Mid", "AI21 Labs: Jurassic-2 Ultra",
+    "Alibaba Cloud (Qwen): qwen2.5-coder-32b-instruct", "Alibaba Cloud (Qwen): qwen2.5-72b-instruct",
+    "Alibaba Cloud (Qwen): qwen2-vl-72b-instruct", "Alibaba Cloud (Qwen): Qwen3 235B A22B Instruct",
+    "Alibaba Cloud (Qwen): Qwen3-Coder 480B A35B Instruct", "Alibaba Cloud (Qwen): qwen3-32b",
+    "Anthropic: Claude 2.0", "Anthropic: Claude 2.1", "Anthropic: Claude 3 Haiku",
+    "Anthropic: Claude 3 Opus", "Anthropic: Claude 3 Sonnet", "Anthropic: Claude Instant 1.2",
+    "Cohere: Command", "Cohere: Command Light", "Cohere: Command Nightly", "Cohere: Command R",
+    "Cohere: Command R+", "Cohere: Generate", "DeepSeek: DeepSeek-Coder-33B",
+    "DeepSeek: DeepSeek-LLM-67B", "DeepSeek: DeepSeek-V2", "Google: Gemini 1.0 Pro",
+    "Google: Gemini 1.5 Flash", "Google: Gemini 1.5 Pro", "Google: Gemini 2.0 Flash",
+    "Google: Gemini 2.0 Flash-Lite", "Google: Gemini 2.0 Pro Experimental", "Google: Gemini 2.5 Flash",
+    "Google: Gemini 2.5 Flash-Lite", "Hugging Face (Specialized): SamLowe/roberta-base-go_emotions",
+    "Hugging Face (Specialized): yorickvp/llava-13b", "IBM: granite-3.3-8b-instruct",
+    "Inflection AI: Inflection-3 Pi", "Inflection AI: Inflection-3 Productivity",
+    "LG AI Research: EXAONE 3.5 32B Instruct", "Mistral AI: Mistral 7B", "Mistral AI: Mistral Large 2",
+    "Mistral AI: Mistral Small 2", "Mistral AI: Mixtral 8x22B", "Mistral AI: Mixtral 8x7B",
+    "Moonshot AI: Kimi K2 Instruct", "OpenAI (Open-Weight): gpt-oss-120b", "OpenAI (Open-Weight): gpt-oss-20b",
+    "OpenAI: gpt-5-mini", "OpenAI: gpt-5-nano", "OpenAI: gpt-4", "OpenAI: gpt-4-turbo",
+    "OpenAI: gpt-4.1", "OpenAI: gpt-4.1-mini", "OpenAI: gpt-4.1-nano", "OpenAI: gpt-4o",
+    "Perplexity AI: sonar", "Perplexity AI: sonar deep research", "Perplexity AI: sonar pro",
+    "Perplexity AI: sonar reasoning", "Perplexity AI: sonar reasoning pro", "xAI: Grok 4 Heavy",
+    "xAI: Grok 4", "xAI: Grok 1.5", "xAI: Grok 1.5 Vision", "xAI: Grok 1", "Yi (01.AI): yi-large",
+    "Zhipu AI: GLM-4.5-Air"
+]
+ALL_MODELS = INTEGRATED_MODELS + FUTURE_MODELS
+
+INTENT_CATEGORIES = ["Billing Inquiry", "Cancellation Request", "Technical Support", "Product Information", "Positive Feedback", "Negative Feedback", "Unclassified"]
+SYSTEM_PROMPT_INTENT = f"""
+You are an expert intent classification system for a customer service bot. Your task is to analyze the user's message and classify it into ONE of the following predefined categories: {', '.join(INTENT_CATEGORIES)}.
+Respond with ONLY the category name and nothing else.
+"""
+
+# --- API CALL FUNCTIONS ---
+def analyze_with_openai(api_key, user_message):
+    try:
+        client = openai.OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
+            model="gpt-5", messages=[{"role": "system", "content": SYSTEM_PROMPT_INTENT}, {"role": "user", "content": user_message}],
+            temperature=0.0, max_tokens=15
+        )
+        intent = response.choices[0].message.content.strip()
+        return intent if intent in INTENT_CATEGORIES else "Unclassified"
+    except Exception as e:
+        st.error(f"OpenAI API Error: {e}")
+        return None
+
+def analyze_with_google(api_key, user_message):
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-pro')
+        full_prompt = f"{SYSTEM_PROMPT_INTENT}\n\nUser Message: \"{user_message}\""
+        response = model.generate_content(full_prompt)
+        intent = response.text.strip()
+        return intent if intent in INTENT_CATEGORIES else "Unclassified"
+    except Exception as e:
+        st.error(f"Google Gemini API Error: {e}")
+        return None
+
+def analyze_with_anthropic(api_key, user_message):
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model="claude-3-5-sonnet-20240620", max_tokens=15, temperature=0.0,
+            system=SYSTEM_PROMPT_INTENT, messages=[{"role": "user", "content": user_message}]
+        )
+        intent = message.content[0].text.strip()
+        return intent if intent in INTENT_CATEGORIES else "Unclassified"
+    except Exception as e:
+        st.error(f"Anthropic API Error: {e}")
+        return None
+
+# --- SIDEBAR FOR CONFIGURATION ---
+with st.sidebar:
+    st.header("⚙️ Configuration")
+    st.write("Select an AI model and provide the required API key(s).")
+    model_choice = st.selectbox("Choose AI Model:", ALL_MODELS, index=0)
+    st.markdown("---")
+    openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for all OpenAI models.")
+    google_api_key = st.text_input("Google API Key", type="password", help="Required for all Google Gemini models.")
+    anthropic_api_key = st.text_input("Anthropic API Key", type="password", help="Required for all Anthropic Claude models.")
+    st.markdown("---")
+    st.info("Your API keys are not stored and are only used for the current session.")
+
+# --- MAIN APP HEADER ---
+st.title("🔬 Conversational Intent Model Analyzer")
+st.markdown("""
+This application is a professional demonstration for the **AI Data Analyst** role at **Drips**. It showcases the ability to **evaluate and benchmark leading AI models** for the core task of **customer intent classification**. This directly aligns with the job's focus on `AI Data Analysis & Intent Modeling`, `Model Optimization`, and `Data Curation`.
+""")
+st.markdown("---")
+
+# --- MAIN APPLICATION LAYOUT ---
+col1, col2 = st.columns((1, 1.2))
+
+# --- COLUMN 1: LIVE INTENT CLASSIFICATION ---
+with col1:
+    st.header("Live Intent Classification")
+    st.write("Enter a customer message to see how different AI models interpret the intent.")
+    user_input = st.text_area("Customer Message:", "I was charged twice this month for my subscription, can you please look into it?", height=100)
+
+    if st.button("Analyze Intent", type="primary"):
+        analyzed_intent = None
+        
+        if "---" in model_choice:
+            st.warning("Please select a model from the integrated list at the top.")
+        else:
+            provider = model_choice.split(':')[0]
+            with st.spinner(f"Asking {provider} to classify intent..."):
+                if provider == "OpenAI":
+                    if openai_api_key: analyzed_intent = analyze_with_openai(openai_api_key, user_input)
+                    else: st.warning("Please provide your OpenAI API key in the sidebar.")
+                elif provider == "Google":
+                    if google_api_key: analyzed_intent = analyze_with_google(google_api_key, user_input)
+                    else: st.warning("Please provide your Google API key in the sidebar.")
+                elif provider == "Anthropic":
+                    if anthropic_api_key: analyzed_intent = analyze_with_anthropic(anthropic_api_key, user_input)
+                    else: st.warning("Please provide your Anthropic API key in the sidebar.")
+
+        if analyzed_intent:
+            st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
+            st.write("""
+            **How this helps Drips:** An AI Data Analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing Drips' conversational AI.
+            """)
+
+# --- COLUMN 2: DATA ANALYSIS DASHBOARD ---
+with col2:
+    st.header("Customer Interaction Data Analysis")
+    st.write("This dashboard visualizes trends from a sample dataset of customer interactions, a typical starting point for analysis.")
+
+    try:
+        df = pd.read_csv('customer_interactions.csv')
+        st.subheader("Distribution of Customer Intents")
+        intent_counts = df['intent'].value_counts().reset_index()
+        intent_counts.columns = ['Intent', 'Count']
+        
+        fig = px.bar(
+            intent_counts, x='Intent', y='Count', color='Intent',
+            title='Frequency of Each Customer Intent',
+            labels={'Count': 'Number of Interactions', 'Intent': 'Classified Intent'}
+        )
+        fig.update_layout(xaxis_tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True)
+        st.write("""
+        **How this helps Drips:** This analysis helps prioritize work. An analyst would focus on improving the models for the most frequent intents (`Billing Inquiry`, `Technical Support`) to achieve the largest impact on overall system performance and customer satisfaction. This directly relates to **identifying trends to enhance system performance.**
+        """)
+
+    except FileNotFoundError:
+        st.error("Error: `customer_interactions.csv` not found.")
+    except Exception as e:
+        st.error(f"An error occurred while loading the data: {e}")
+
+st.markdown("---")
+st.write("Project by [Your Name] - Created for the Drips AI Data Analyst Application.")
