@@ -9,7 +9,7 @@ This application showcases a hands-on ability to `analyze AI-powered customer in
 \[Link to your live Streamlit Community Cloud app - you'll add this after deploying\]
 
 ## 🎯 Project Purpose
-
+> add yur app link here <
 The goal of this project is to demonstrate a sophisticated, hands-on understanding of the AI Data Analyst role by:
 
 1.  **Evaluating AI Models for Intent Recognition:** The application makes real-time API calls to OpenAI (GPT-5), Google (Gemini 2.5 Pro), and Anthropic (Claude 3.5 Sonnet). This simulates the process of "assessing model launch success" and selecting the best tool for accurately interpreting consumer intent.
