@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # --- STATIC DATA ---
-# Re-ordered list of models to highlight integrated ones first.
+# Separated lists for active and future models.
 INTEGRATED_MODELS = [
     "OpenAI: gpt-5",
     "Google: Gemini 2.5 Pro",
@@ -26,7 +26,6 @@ INTEGRATED_MODELS = [
 ]
 
 FUTURE_MODELS = [
-    "--- (Future Integrations Below) ---",
     "AI21 Labs: Jurassic-1 Grande", "AI21 Labs: Jurassic-1 Jumbo", "AI21 Labs: Jurassic-1 Large",
     "AI21 Labs: Jurassic-2 Light", "AI21 Labs: Jurassic-2 Mid", "AI21 Labs: Jurassic-2 Ultra",
     "Alibaba Cloud (Qwen): qwen2.5-coder-32b-instruct", "Alibaba Cloud (Qwen): qwen2.5-72b-instruct",
@@ -52,7 +51,6 @@ FUTURE_MODELS = [
     "xAI: Grok 4", "xAI: Grok 1.5", "xAI: Grok 1.5 Vision", "xAI: Grok 1", "Yi (01.AI): yi-large",
     "Zhipu AI: GLM-4.5-Air"
 ]
-ALL_MODELS = INTEGRATED_MODELS + FUTURE_MODELS
 
 INTENT_CATEGORIES = ["Billing Inquiry", "Cancellation Request", "Technical Support", "Product Information", "Positive Feedback", "Negative Feedback", "Unclassified"]
 SYSTEM_PROMPT_INTENT = f"""
@@ -103,7 +101,14 @@ def analyze_with_anthropic(api_key, user_message):
 with st.sidebar:
     st.header("⚙️ Configuration")
     st.write("Select an AI model and provide the required API key(s).")
-    model_choice = st.selectbox("Choose AI Model:", ALL_MODELS, index=0)
+    model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
+    
+    st.selectbox(
+        "(Future Integrations Below):",
+        FUTURE_MODELS,
+        disabled=True
+    )
+
     st.markdown("---")
     openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for all OpenAI models.")
     google_api_key = st.text_input("Google API Key", type="password", help="Required for all Google Gemini models.")
@@ -129,21 +134,17 @@ with col1:
 
     if st.button("Analyze Intent", type="primary"):
         analyzed_intent = None
-        
-        if "---" in model_choice:
-            st.warning("Please select a model from the integrated list at the top.")
-        else:
-            provider = model_choice.split(':')[0]
-            with st.spinner(f"Asking {provider} to classify intent..."):
-                if provider == "OpenAI":
-                    if openai_api_key: analyzed_intent = analyze_with_openai(openai_api_key, user_input)
-                    else: st.warning("Please provide your OpenAI API key in the sidebar.")
-                elif provider == "Google":
-                    if google_api_key: analyzed_intent = analyze_with_google(google_api_key, user_input)
-                    else: st.warning("Please provide your Google API key in the sidebar.")
-                elif provider == "Anthropic":
-                    if anthropic_api_key: analyzed_intent = analyze_with_anthropic(anthropic_api_key, user_input)
-                    else: st.warning("Please provide your Anthropic API key in the sidebar.")
+        provider = model_choice.split(':')[0]
+        with st.spinner(f"Asking {provider} to classify intent..."):
+            if provider == "OpenAI":
+                if openai_api_key: analyzed_intent = analyze_with_openai(openai_api_key, user_input)
+                else: st.warning("Please provide your OpenAI API key in the sidebar.")
+            elif provider == "Google":
+                if google_api_key: analyzed_intent = analyze_with_google(google_api_key, user_input)
+                else: st.warning("Please provide your Google API key in the sidebar.")
+            elif provider == "Anthropic":
+                if anthropic_api_key: analyzed_intent = analyze_with_anthropic(anthropic_api_key, user_input)
+                else: st.warning("Please provide your Anthropic API key in the sidebar.")
 
         if analyzed_intent:
             st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
