@@ -99,18 +99,15 @@ def analyze_with_anthropic(api_key, user_message):
 
 # --- SIDEBAR FOR CONFIGURATION ---
 with st.sidebar:
-    st.header("⚙️ Configuration")
-    st.write("Select an AI model and provide the required API key.")
-    model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
-    
-    api_key = st.text_input("Enter API Key for Selected Model", type="password")
+    with st.expander("⚙️ Config", expanded=True):
+        st.write("Select an AI model and provide the required API key.")
+        model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
+        api_key = st.text_input("Enter API Key for Selected Model", type="password")
+        st.info("Your API key is not stored and is only used for the current session.")
 
-    st.info("Your API key is not stored and is only used for the current session.")
+    with st.expander("Future Integrations"):
+        st.selectbox("Future Models:", FUTURE_MODELS)
 
-    st.selectbox(
-        "(Future Integrations Below):",
-        FUTURE_MODELS
-    )
 
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
