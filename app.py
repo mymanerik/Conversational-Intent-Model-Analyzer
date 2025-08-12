@@ -1,7 +1,7 @@
 # app.py
 # Conversational Intent Model Analyzer
 # This version benchmarks leading AI models (OpenAI, Google, Anthropic) for the
-# core task of customer intent classification.
+# core task of customer intent classification and uses a live Firestore database.
 
 import streamlit as st
 import pandas as pd
@@ -9,6 +9,9 @@ import plotly.express as px
 import openai
 import google.generativeai as genai
 import anthropic
+from google.cloud import firestore
+from datetime import datetime
+import os
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -16,6 +19,19 @@ st.set_page_config(
     page_icon="🔬",
     layout="wide"
 )
+
+# --- FIRESTORE DATABASE CONNECTION ---
+# This assumes the app is running in an environment with Google Cloud credentials
+# (like Streamlit Community Cloud, which is built on Google Cloud).
+try:
+    db = firestore.Client()
+    # Safely get a unique identifier for this app instance
+    app_id = os.environ.get('__app_id', 'default-app-id')
+    submissions_ref = db.collection(f"artifacts/{app_id}/public/data/submissions")
+except Exception as e:
+    st.error(f"Could not connect to Firestore. Please ensure your environment is authenticated. Error: {e}")
+    st.stop()
+
 
 # --- STATIC DATA ---
 # Separated lists for active and future models.
@@ -148,18 +164,40 @@ with col1:
                     analyzed_intent = analyze_with_anthropic(api_key, user_input)
 
             if analyzed_intent:
-                st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
+                # Save the successful result to Firestore
+                try:
+                    submission_data = {
+                        "timestamp": datetime.now(),
+                        "model": model_choice,
+                        "message": user_input,
+                        "intent": analyzed_intent
+                    }
+                    submissions_ref.add(submission_data)
+                    st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
+                    st.toast("Analysis saved to database!")
+                except Exception as e:
+                    st.error(f"Failed to save result to database: {e}")
+
                 st.write("""
                 **How this helps an AI Data Analyst:** An analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing conversational AI.
                 """)
 
-# --- COLUMN 2: DATA ANALYSIS DASHBOARD ---
+# --- COLUMN 2: LIVE DATA ANALYSIS DASHBOARD ---
 with col2:
-    st.header("Customer Interaction Data Analysis")
-    st.write("This dashboard visualizes trends from a sample dataset of customer interactions, a typical starting point for analysis.")
-
+    # Load data from Firestore
     try:
-        df = pd.read_csv('customer_interactions.csv')
+        docs = submissions_ref.stream()
+        submissions = [doc.to_dict() for doc in docs]
+        n_submissions = len(submissions)
+    except Exception as e:
+        st.error(f"Could not load data from Firestore: {e}")
+        submissions = []
+        n_submissions = 0
+
+    st.header(f"Customer Interaction Data Analysis based on {n_submissions} Submissions")
+    
+    if n_submissions > 0:
+        df = pd.DataFrame(submissions)
         st.subheader("Distribution of Customer Intents")
         intent_counts = df['intent'].value_counts().reset_index()
         intent_counts.columns = ['Intent', 'Count']
@@ -174,11 +212,9 @@ with col2:
         st.write("""
         **How this helps an AI Data Analyst:** This analysis helps prioritize work. An analyst would focus on improving the models for the most frequent intents (`Billing Inquiry`, `Technical Support`) to achieve the largest impact on overall system performance and customer satisfaction. This directly relates to **identifying trends to enhance system performance.**
         """)
+    else:
+        st.info("No submissions yet. Analyze a message to see the data populate here!")
 
-    except FileNotFoundError:
-        st.error("Error: `customer_interactions.csv` not found.")
-    except Exception as e:
-        st.error(f"An error occurred while loading the data: {e}")
 
 st.markdown("---")
 # Updated footer with markdown links - re-typed to ensure no hidden characters
