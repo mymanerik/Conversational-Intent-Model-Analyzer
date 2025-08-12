@@ -27,7 +27,8 @@ try:
     # Get credentials from Streamlit secrets (which parses TOML into a dict)
     creds_dict = st.secrets["firestore_credentials"]
     creds = service_account.Credentials.from_service_account_info(creds_dict)
-    db = firestore.Client(credentials=creds)
+    # Explicitly pass the project ID from the credentials
+    db = firestore.Client(credentials=creds, project=creds_dict['project_id'])
 
     # Safely get a unique identifier for this app instance
     app_id = os.environ.get('__app_id', 'default-app-id')
