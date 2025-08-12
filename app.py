@@ -141,11 +141,11 @@ with col1:
             provider = model_choice.split(':')[0]
             with st.spinner(f"Asking {provider} to classify intent..."):
                 if provider == "OpenAI":
-                    analyzed_intent = analyze_with_openai(api_key, user_message)
+                    analyzed_intent = analyze_with_openai(api_key, user_input)
                 elif provider == "Google":
-                    analyzed_intent = analyze_with_google(api_key, user_message)
+                    analyzed_intent = analyze_with_google(api_key, user_input)
                 elif provider == "Anthropic":
-                    analyzed_intent = analyze_with_anthropic(api_key, user_message)
+                    analyzed_intent = analyze_with_anthropic(api_key, user_input)
 
             if analyzed_intent:
                 st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
