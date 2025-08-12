@@ -10,6 +10,7 @@ import openai
 import google.generativeai as genai
 import anthropic
 from google.cloud import firestore
+from google.oauth2 import service_account
 from datetime import datetime
 import os
 
@@ -21,15 +22,18 @@ st.set_page_config(
 )
 
 # --- FIRESTORE DATABASE CONNECTION ---
-# This assumes the app is running in an environment with Google Cloud credentials
-# (like Streamlit Community Cloud, which is built on Google Cloud).
+# This uses Streamlit's secrets management for secure authentication in TOML format.
 try:
-    db = firestore.Client()
+    # Get credentials from Streamlit secrets (which parses TOML into a dict)
+    creds_dict = st.secrets["firestore_credentials"]
+    creds = service_account.Credentials.from_service_account_info(creds_dict)
+    db = firestore.Client(credentials=creds)
+
     # Safely get a unique identifier for this app instance
     app_id = os.environ.get('__app_id', 'default-app-id')
     submissions_ref = db.collection(f"artifacts/{app_id}/public/data/submissions")
 except Exception as e:
-    st.error(f"Could not connect to Firestore. Please ensure your environment is authenticated. Error: {e}")
+    st.error(f"Could not connect to Firestore. Please ensure your secrets are in the correct TOML format. Error: {e}")
     st.stop()
 
 
