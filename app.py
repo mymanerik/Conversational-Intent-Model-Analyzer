@@ -169,9 +169,9 @@ with st.sidebar:
     model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
     api_key = st.text_input("Enter API Key for Selected Model", type="password")
     st.markdown("""
-    * [Get an OpenAI API Key](https://platform.openai.com/api-keys)
-    * [Get a Google Gemini API Key (free)](https://aistudio.google.com/app/apikey)
-    * [Get an Anthropic API Key](https://console.anthropic.com)
+    * [Get a Claude 3.5 Sonnet API Key](https://console.anthropic.com)
+    * [Get a Gemini 2.5 Pro API Key (free)](https://aistudio.google.com/app/apikey)
+    * [Get a GPT-4o API Key](https://platform.openai.com/api-keys)
     """)
     st.info("Your API key is not stored and is only used for the current session.")
 
