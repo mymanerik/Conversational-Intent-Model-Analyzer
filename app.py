@@ -198,15 +198,15 @@ with col1:
     
     # Updated text area with placeholder
     placeholder_text = (
-        "Please enter a message or question based on one of the following intents:\n\n"
-        "- Billing Inquiry\n- Cancellation Request\n- Technical Support\n"
-        "- Product Information\n- Positive Feedback\n- Negative Feedback\n\n"
-        "Messages outside these categories may be forwarded to a customer service representative."
+        "Please enter a message or question based on one of the following intents: "
+        "Billing Inquiry, Cancellation Request, Technical Support, Product Information, "
+        "Positive Feedback, or Negative Feedback."
     )
-    user_input = st.text_area("Customer Message:", height=200, placeholder=placeholder_text)
+    user_input = st.text_area("Customer Message:", height=150, placeholder=placeholder_text)
     
     # Optional email input
     user_email = st.text_input("Optional: Enter your email for a copy of this inquiry")
+    st.markdown("In the real world, the reasoned intent category would route to the appropriate department's email address, easy to set up. For the sake of this demo, ***Erik Malson will be cc'd.***")
 
 
     if st.button("Analyze Intent", type="primary"):
