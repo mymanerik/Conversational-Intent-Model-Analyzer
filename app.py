@@ -292,5 +292,5 @@ with col2:
 
 
 st.markdown("---")
-# Updated footer with markdown links - re-typed to ensure no hidden characters
+# Updated footer with markdown links
 st.markdown("[Conversational Intent Model Analyzer](https://github.com/mymanerik/Conversational-Intent-Model-Analyzer/tree/master) | [🌐Erik Malson](https://Erik.ml) / [@MyManErik](https://instagram.com/mymanerik/) | [@AIinTheAM](https://YouTube.com/@AIinTheAm)")
