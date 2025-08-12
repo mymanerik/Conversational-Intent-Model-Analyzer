@@ -99,41 +99,23 @@ def analyze_with_anthropic(api_key, user_message):
 
 # --- SIDEBAR FOR CONFIGURATION ---
 with st.sidebar:
-    # Initialize session state for accordion behavior
-    if 'active_expander' not in st.session_state:
-        st.session_state.active_expander = 'Model Selection'
+    st.header("⚙️ Model Selection")
+    st.write("Select an AI model and provide the required API key.")
+    model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
+    api_key = st.text_input("Enter API Key for Selected Model", type="password")
+    st.markdown("""
+    * [Get an OpenAI API Key](https://platform.openai.com/api-keys)
+    * [Get a Google Gemini API Key](https://aistudio.google.com/app/apikey)
+    * [Get an Anthropic API Key](https://console.anthropic.com)
+    """)
+    st.info("Your API key is not stored and is only used for the current session.")
 
-    # Create the expanders and check their state
-    model_expander = st.expander("⚙️ Model Selection", expanded=(st.session_state.active_expander == 'Model Selection'))
-    future_expander = st.expander("Future Integrations", expanded=(st.session_state.active_expander == 'Future Integrations'))
-
-    # Logic to manage the accordion state
-    if model_expander and st.session_state.active_expander != 'Model Selection':
-        st.session_state.active_expander = 'Model Selection'
-        st.rerun()
-
-    if future_expander and st.session_state.active_expander != 'Future Integrations':
-        st.session_state.active_expander = 'Future Integrations'
-        st.rerun()
-
-    # Place content inside the expander containers
-    with model_expander:
-        st.write("Select an AI model and provide the required API key.")
-        model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
-        api_key = st.text_input("Enter API Key for Selected Model", type="password")
-        st.markdown("""
-        * [Get an OpenAI API Key](https://platform.openai.com/api-keys)
-        * [Get a Google Gemini API Key](https://aistudio.google.com/app/apikey)
-        * [Get an Anthropic API Key](https://console.anthropic.com)
-        """)
-        st.info("Your API key is not stored and is only used for the current session.")
-
-    with future_expander:
-        st.info("The following models will be integrated into this demo at a future date.")
-        st.selectbox(
-            "Future Model List:",
-            FUTURE_MODELS
-        )
+    st.header("Future Integrations")
+    st.info("The following models will be integrated into this demo at a future date.")
+    st.selectbox(
+        "Future Model List:",
+        FUTURE_MODELS
+    )
 
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
@@ -199,5 +181,5 @@ with col2:
         st.error(f"An error occurred while loading the data: {e}")
 
 st.markdown("---")
-# Updated footer with markdown links
+# Updated footer with markdown links - re-typed to ensure no hidden characters
 st.markdown("[Conversational Intent Model Analyzer](https://github.com/mymanerik/Conversational-Intent-Model-Analyzer/tree/master) | [🌐Erik Malson](https://Erik.ml) / [@MyManErik](https://instagram.com/mymanerik/) | [@AIinTheAM](https://YouTube.com/@AIinTheAm)")
