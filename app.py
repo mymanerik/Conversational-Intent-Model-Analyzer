@@ -20,7 +20,7 @@ st.set_page_config(
 # --- STATIC DATA ---
 # Separated lists for active and future models.
 INTEGRATED_MODELS = [
-    "OpenAI: gpt-5",
+    "OpenAI: gpt-5-nano",
     "Google: Gemini 2.5 Pro",
     "Anthropic: Claude 3.5 Sonnet",
 ]
@@ -44,7 +44,7 @@ FUTURE_MODELS = [
     "LG AI Research: EXAONE 3.5 32B Instruct", "Mistral AI: Mistral 7B", "Mistral AI: Mistral Large 2",
     "Mistral AI: Mistral Small 2", "Mistral AI: Mixtral 8x22B", "Mistral AI: Mixtral 8x7B",
     "Moonshot AI: Kimi K2 Instruct", "OpenAI (Open-Weight): gpt-oss-120b", "OpenAI (Open-Weight): gpt-oss-20b",
-    "OpenAI: gpt-5-mini", "OpenAI: gpt-5-nano", "OpenAI: gpt-4", "OpenAI: gpt-4-turbo",
+    "OpenAI: gpt-5", "OpenAI: gpt-5-mini", "OpenAI: gpt-4", "OpenAI: gpt-4-turbo",
     "OpenAI: gpt-4.1", "OpenAI: gpt-4.1-mini", "OpenAI: gpt-4.1-nano", "OpenAI: gpt-4o",
     "Perplexity AI: sonar", "Perplexity AI: sonar deep research", "Perplexity AI: sonar pro",
     "Perplexity AI: sonar reasoning", "Perplexity AI: sonar reasoning pro", "xAI: Grok 4 Heavy",
@@ -63,7 +63,7 @@ def analyze_with_openai(api_key, user_message):
     try:
         client = openai.OpenAI(api_key=api_key)
         response = client.chat.completions.create(
-            model="gpt-5", messages=[{"role": "system", "content": SYSTEM_PROMPT_INTENT}, {"role": "user", "content": user_message}],
+            model="gpt-5-nano", messages=[{"role": "system", "content": SYSTEM_PROMPT_INTENT}, {"role": "user", "content": user_message}],
             temperature=0.0, max_tokens=15
         )
         intent = response.choices[0].message.content.strip()
@@ -141,11 +141,11 @@ with col1:
             provider = model_choice.split(':')[0]
             with st.spinner(f"Asking {provider} to classify intent..."):
                 if provider == "OpenAI":
-                    analyzed_intent = analyze_with_openai(api_key, user_input)
+                    analyzed_intent = analyze_with_openai(api_key, user_message)
                 elif provider == "Google":
-                    analyzed_intent = analyze_with_google(api_key, user_input)
+                    analyzed_intent = analyze_with_google(api_key, user_message)
                 elif provider == "Anthropic":
-                    analyzed_intent = analyze_with_anthropic(api_key, user_input)
+                    analyzed_intent = analyze_with_anthropic(api_key, user_message)
 
             if analyzed_intent:
                 st.success(f"**Predicted Intent ({model_choice}):** `{analyzed_intent}`")
