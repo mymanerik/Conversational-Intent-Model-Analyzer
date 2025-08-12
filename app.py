@@ -170,7 +170,7 @@ with st.sidebar:
     api_key = st.text_input("Enter API Key for Selected Model", type="password")
     st.markdown("""
     * [Get an OpenAI API Key](https://platform.openai.com/api-keys)
-    * [Get a Google Gemini API Key](https://aistudio.google.com/app/apikey)
+    * [Get a Google Gemini API Key (free)](https://aistudio.google.com/app/apikey)
     * [Get an Anthropic API Key](https://console.anthropic.com)
     """)
     st.info("Your API key is not stored and is only used for the current session.")
@@ -202,10 +202,10 @@ with col1:
         "Billing Inquiry, Cancellation Request, Technical Support, Product Information, "
         "Positive Feedback, or Negative Feedback."
     )
-    user_input = st.text_area("Customer Message:", height=150, placeholder=placeholder_text)
+    user_input = st.text_area("Customer Message:", height=150, placeholder=placeholder_text, key="user_input_box")
     
     # Optional email input
-    user_email = st.text_input("Optional: Enter your email for a copy of this inquiry")
+    user_email = st.text_input("Optional: Enter your email for a copy of this inquiry", key="user_email_box")
     st.markdown("In the real world, the reasoned intent category would route to the appropriate department's email address, easy to set up. For the sake of this demo, ***Erik Malson will be cc'd.***")
 
 
@@ -273,11 +273,14 @@ with col2:
         st.subheader("Distribution of Customer Intents")
         intent_counts = df['intent'].value_counts().reset_index()
         intent_counts.columns = ['Intent', 'Count']
+        # Create a new column with the desired format
+        intent_counts['Intent_with_Count'] = intent_counts.apply(lambda row: f"{row['Intent']} ({row['Count']})", axis=1)
+
         
         fig = px.bar(
-            intent_counts, x='Intent', y='Count', color='Intent',
+            intent_counts, x='Intent_with_Count', y='Count', color='Intent',
             title='Frequency of Each Customer Intent',
-            labels={'Count': 'Number of Interactions', 'Intent': 'Classified Intent'}
+            labels={'Count': 'Number of Interactions', 'Intent_with_Count': 'Classified Intent'}
         )
         fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
