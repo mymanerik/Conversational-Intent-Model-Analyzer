@@ -4,3 +4,4 @@ plotly
 openai
 google-generativeai
 anthropic
+google-cloud-firestore
