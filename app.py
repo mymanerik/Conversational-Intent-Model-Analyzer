@@ -17,19 +17,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- CUSTOM CSS FOR SIDEBAR WIDTH ---
-st.markdown(
-    """
-    <style>
-    [data-testid="stSidebar"] {
-        width: 450px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
 # --- STATIC DATA ---
 # Separated lists for active and future models.
 INTEGRATED_MODELS = [
@@ -82,7 +69,7 @@ def analyze_with_openai(api_key, user_message):
         intent = response.choices[0].message.content.strip()
         return intent if intent in INTENT_CATEGORIES else "Unclassified"
     except Exception as e:
-        st.error("That key is not for the model you chose, or the key has expired.")
+        st.error("That key is NOT for the model you chose; or the key has expired")
         return None
 
 def analyze_with_google(api_key, user_message):
@@ -94,7 +81,7 @@ def analyze_with_google(api_key, user_message):
         intent = response.text.strip()
         return intent if intent in INTENT_CATEGORIES else "Unclassified"
     except Exception as e:
-        st.error("That key is not for the model you chose, or the key has expired.")
+        st.error("That key is NOT for the model you chose; or the key has expired")
         return None
 
 def analyze_with_anthropic(api_key, user_message):
@@ -107,35 +94,26 @@ def analyze_with_anthropic(api_key, user_message):
         intent = message.content[0].text.strip()
         return intent if intent in INTENT_CATEGORIES else "Unclassified"
     except Exception as e:
-        st.error("That key is not for the model you chose, or the key has expired.")
+        st.error("That key is NOT for the model you chose; or the key has expired")
         return None
 
 # --- SIDEBAR FOR CONFIGURATION ---
 with st.sidebar:
-    # Initialize session state for expanders if they don't exist
-    if 'model_expander' not in st.session_state:
-        st.session_state.model_expander = True
-        st.session_state.future_expander = False
+    st.header("⚙️ Configuration")
+    st.write("Select an AI model and provide the required API key.")
+    model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
+    
+    st.selectbox(
+        "(Future Integrations Below):",
+        FUTURE_MODELS
+    )
 
-    # Logic to handle expander state
-    def toggle_expanders(expander_name):
-        if expander_name == 'model' and st.session_state.model_expander == False:
-            st.session_state.model_expander = True
-            st.session_state.future_expander = False
-        elif expander_name == 'future' and st.session_state.future_expander == False:
-            st.session_state.future_expander = True
-            st.session_state.model_expander = False
+    st.markdown("---")
+    
+    api_key = st.text_input("Enter API Key for Selected Model", type="password")
 
-    with st.expander("⚙️ Model Selection", expanded=st.session_state.model_expander, on_change=toggle_expanders, kwargs={'expander_name': 'model'}):
-        st.write("Select an AI model and provide the required API key.")
-        model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
-        api_key = st.text_input("Enter API Key for Selected Model", type="password")
-        st.info("Your API key is not stored and is only used for the current session.")
-
-    with st.expander("Future Integrations", expanded=st.session_state.future_expander, on_change=toggle_expanders, kwargs={'expander_name': 'future'}):
-        st.info("The following models will be integrated into this demo at a future date.")
-        st.selectbox("Future Models:", FUTURE_MODELS, disabled=True)
-
+    st.markdown("---")
+    st.info("Your API key is not stored and is only used for the current session.")
 
 # --- MAIN APP HEADER ---
 st.title("🔬 Conversational Intent Model Analyzer")
@@ -201,6 +179,4 @@ with col2:
         st.error(f"An error occurred while loading the data: {e}")
 
 st.markdown("---")
-st.markdown("""
-[Conversational Intent Model Analyzer](https://github.com/mymanerik/Conversational-Intent-Model-Analyzer/tree/master) | [🌐Erik Malson](https://Erik.ml) / [@MyManErik](https://instagram.com/mymanerik/) | [@AIinTheAM](https://YouTube.com/@AIinTheAm)
-""")
+st.write("Project by [Your Name] - Created for an AI Data Analyst Application.")
