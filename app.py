@@ -13,6 +13,9 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 from datetime import datetime
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -78,6 +81,47 @@ SYSTEM_PROMPT_INTENT = f"""
 You are an expert intent classification system for a customer service bot. Your task is to analyze the user's message and classify it into ONE of the following predefined categories: {', '.join(INTENT_CATEGORIES)}.
 Respond with ONLY the category name and nothing else.
 """
+
+# --- EMAIL SENDING FUNCTION ---
+def send_email(user_email, message, analysis_result):
+    try:
+        # Get email credentials from Streamlit secrets
+        sender_email = st.secrets["email_credentials"]["email"]
+        sender_password = st.secrets["email_credentials"]["password"]
+        receiver_email = user_email
+        cc_email = "erikmalson+cima@gmail.com"
+
+        # Create the email
+        subject = "Your Inquiry from the Conversational Intent Model Analyzer"
+        body = f"""
+        Thank you for using the Conversational Intent Model Analyzer.
+
+        Here is a copy of your inquiry:
+        --------------------------------
+        Your Message: {message}
+        AI Model Used: {analysis_result['model']}
+        Predicted Intent: {analysis_result['intent']}
+        --------------------------------
+
+        A copy of this has been sent to our customer accountability team.
+        """
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+        msg['Cc'] = cc_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Connect to the server and send the email
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, [receiver_email, cc_email], msg.as_string())
+        server.quit()
+        st.toast("Confirmation email sent successfully!")
+    except Exception as e:
+        st.error(f"Failed to send email. Please ensure email credentials are set correctly in secrets. Error: {e}")
 
 # --- API CALL FUNCTIONS ---
 def analyze_with_openai(api_key, user_message):
@@ -151,12 +195,25 @@ col1, col2 = st.columns((1, 1.2))
 # --- COLUMN 1: LIVE INTENT CLASSIFICATION ---
 with col1:
     st.header("Live Intent Classification")
-    st.write("Enter a customer message to see how different AI models interpret the intent.")
-    user_input = st.text_area("Customer Message:", "I was charged twice this month for my subscription, can you please look into it?", height=100)
+    
+    # Updated text area with placeholder
+    placeholder_text = (
+        "Please enter a message or question based on one of the following intents:\n\n"
+        "- Billing Inquiry\n- Cancellation Request\n- Technical Support\n"
+        "- Product Information\n- Positive Feedback\n- Negative Feedback\n\n"
+        "Messages outside these categories may be forwarded to a customer service representative."
+    )
+    user_input = st.text_area("Customer Message:", height=200, placeholder=placeholder_text)
+    
+    # Optional email input
+    user_email = st.text_input("Optional: Enter your email for a copy of this inquiry")
+
 
     if st.button("Analyze Intent", type="primary"):
         if not api_key:
             st.warning("Please enter your API key in the sidebar.")
+        elif not user_input:
+            st.warning("Please enter a customer message to analyze.")
         else:
             analyzed_intent = None
             provider = model_choice.split(':')[0]
@@ -169,6 +226,12 @@ with col1:
                     analyzed_intent = analyze_with_anthropic(api_key, user_input)
 
             if analyzed_intent:
+                # Prepare data for saving and emailing
+                analysis_result = {
+                    "model": model_choice,
+                    "intent": analyzed_intent
+                }
+                
                 # Save the successful result to Firestore
                 try:
                     submission_data = {
@@ -182,6 +245,10 @@ with col1:
                     st.toast("Analysis saved to database!")
                 except Exception as e:
                     st.error(f"Failed to save result to database: {e}")
+
+                # Send email if address is provided
+                if user_email:
+                    send_email(user_email, user_input, analysis_result)
 
                 st.write("""
                 **How this helps an AI Data Analyst:** An analyst performs these head-to-head comparisons to select the best model for a specific use case. If a model consistently misclassifies an intent (e.g., confusing a `Billing Inquiry` with a `Cancellation Request`), it signals a need to refine the training data or adjust the model's decision pathways. This data-driven selection process is key to optimizing conversational AI.
