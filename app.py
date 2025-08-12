@@ -206,7 +206,7 @@ with col1:
     
     # Optional email input
     user_email = st.text_input("Optional: Enter your email for a copy of this inquiry", key="user_email_box")
-    st.markdown("In the real world, the reasoned intent category would route to the appropriate department's email address, easy to set up. For the sake of this demo, ***Erik Malson will be cc'd.***")
+    st.markdown("In the real world, the reasoned intent category would route to the appropriate department's email address (easy to set up). For the sake of this demo, ***both the above email AND Erik Malson will be cc'd.***")
 
 
     if st.button("Analyze Intent", type="primary"):
