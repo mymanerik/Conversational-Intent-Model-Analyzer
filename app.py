@@ -13,7 +13,7 @@ import anthropic
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="Conversational Intent Model Analyzer",
-    page_icon="🔬",
+    page_icon="�",
     layout="wide"
 )
 
@@ -110,11 +110,11 @@ with st.sidebar:
     # Logic to manage the accordion state
     if model_expander and st.session_state.active_expander != 'Model Selection':
         st.session_state.active_expander = 'Model Selection'
-        st.experimental_rerun()
+        st.rerun()
 
     if future_expander and st.session_state.active_expander != 'Future Integrations':
         st.session_state.active_expander = 'Future Integrations'
-        st.experimental_rerun()
+        st.rerun()
 
     # Place content inside the expander containers
     with model_expander:
@@ -201,3 +201,4 @@ with col2:
 st.markdown("---")
 # Updated footer with markdown links
 st.markdown("[Conversational Intent Model Analyzer](https://github.com/mymanerik/Conversational-Intent-Model-Analyzer/tree/master) | [🌐Erik Malson](https://Erik.ml) / [@MyManErik](https://instagram.com/mymanerik/) | [@AIinTheAM](https://YouTube.com/@AIinTheAm)")
+�
