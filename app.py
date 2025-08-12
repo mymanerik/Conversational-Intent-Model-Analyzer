@@ -99,14 +99,36 @@ def analyze_with_anthropic(api_key, user_message):
 
 # --- SIDEBAR FOR CONFIGURATION ---
 with st.sidebar:
-    # Use st.expander to create collapsible sections
-    with st.expander("⚙️ Model Selection", expanded=True):
+    # Initialize session state for accordion behavior
+    if 'active_expander' not in st.session_state:
+        st.session_state.active_expander = 'Model Selection'
+
+    # Create the expanders and check their state
+    model_expander = st.expander("⚙️ Model Selection", expanded=(st.session_state.active_expander == 'Model Selection'))
+    future_expander = st.expander("Future Integrations", expanded=(st.session_state.active_expander == 'Future Integrations'))
+
+    # Logic to manage the accordion state
+    if model_expander and st.session_state.active_expander != 'Model Selection':
+        st.session_state.active_expander = 'Model Selection'
+        st.experimental_rerun()
+
+    if future_expander and st.session_state.active_expander != 'Future Integrations':
+        st.session_state.active_expander = 'Future Integrations'
+        st.experimental_rerun()
+
+    # Place content inside the expander containers
+    with model_expander:
         st.write("Select an AI model and provide the required API key.")
         model_choice = st.selectbox("Choose AI Model:", INTEGRATED_MODELS, index=0)
         api_key = st.text_input("Enter API Key for Selected Model", type="password")
+        st.markdown("""
+        * [Get an OpenAI API Key](https://platform.openai.com/api-keys)
+        * [Get a Google Gemini API Key](https://aistudio.google.com/app/apikey)
+        * [Get an Anthropic API Key](https://console.anthropic.com)
+        """)
         st.info("Your API key is not stored and is only used for the current session.")
 
-    with st.expander("Future Integrations", expanded=False):
+    with future_expander:
         st.info("The following models will be integrated into this demo at a future date.")
         st.selectbox(
             "Future Model List:",
